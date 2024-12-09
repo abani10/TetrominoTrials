@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color } from 'three';
-import { Cube } from 'objects';
+import { Cube, Floor } from 'objects';
 import { BasicLights } from 'lights';
 
 class GameScene extends Scene {
@@ -16,14 +16,16 @@ class GameScene extends Scene {
         };
 
         // Set background to a nice color
-        this.background = new Color(0x7ec0ee);
+        this.background = new Color(0x000000);
 
         // Add meshes to scene
         // const land = new Land();
         // const flower = new Flower(this);
         const lights = new BasicLights();
         const cube = new Cube(this);
-        this.add(cube, lights);
+
+        const floor = new Floor(this);
+        this.add(cube, lights, floor);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
