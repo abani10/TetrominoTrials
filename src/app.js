@@ -23,7 +23,7 @@ const camera = new PerspectiveCamera(
 );
 
 // Set up camera
-camera.position.set(0, 1, -5);
+camera.position.set(0, 1, -10);
 camera.lookAt(new Vector3(0, 0, 0));
 
 // Initialize Renderer
@@ -94,6 +94,7 @@ document.addEventListener('keypress', (event) => {
 
 // Render Loop
 const onAnimationFrameHandler = () => {
+    scene.update();
     renderer.render(scene, camera);
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
