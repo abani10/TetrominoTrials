@@ -20,13 +20,13 @@ class BasicLights extends Group {
         const dirLight = new DirectionalLight(0xffffff, 0.15);
         const rectLight = new RectAreaLight();
 
-        dir.position.set(5, 1, 2);
+        dir.position.set(0, 1, 5);
         dir.target.position.set(0, 0, 0);
 
         // topLight.position.set(0, 5, 0);
         // topLight.target.position.set(0, 0, 0);
 
-        this.add(dir, dirLight, ambi);
+        this.add(dir, ambi);
     }
 }
 

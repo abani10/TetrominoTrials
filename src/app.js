@@ -23,7 +23,7 @@ const camera = new PerspectiveCamera(
 );
 
 // Set up camera
-camera.position.set(0, 1, -10);
+camera.position.set(0, 1, 5);
 camera.lookAt(new Vector3(0, 0, 0));
 
 // Initialize Renderer
@@ -82,16 +82,17 @@ document.addEventListener('mousemove', (event) => {
     }
 });
 
-const MOVEMENT_SPEED = 0.5;
-let jumpTime = -1;
-let v0 = 1;
-let camGrav = 0.1;
+const MOVEMENT_SPEED = 0.2;
+const v0 = 3;
+const camGrav = 0.1;
+const MAX_SPEED = 0.1;
 let activeMoveControls = {
     up: false,
     left: false,
     right: false,
     down: false,
     jump: false,
+    jumpTime: -1,
 };
 
 document.addEventListener('keydown', (event) => {
@@ -108,7 +109,9 @@ document.addEventListener('keydown', (event) => {
         activeMoveControls.right = true;
     }
     if (event.key == ' ') {
-        jumpTime = 0;
+        if (activeMoveControls.jumpTime < 0) {
+            activeMoveControls.jumpTime = 0;
+        }
         activeMoveControls.jump = true;
     }
 });
@@ -132,18 +135,20 @@ document.addEventListener('keyup', (event) => {
 
 // Render Loop
 const onAnimationFrameHandler = () => {
+    let previousCamera = camera.position.clone();
     scene.update();
 
     // handle jump
-    if (jumpTime >= 0) {
-        let vertSpeed = v0 - camGrav * jumpTime;
+    if (activeMoveControls.jumpTime >= 0) {
+        let vertSpeed = v0 - camGrav * activeMoveControls.jumpTime;
+        vertSpeed = Math.min(vertSpeed, MAX_SPEED);
         camera.position.y += vertSpeed;
-        jumpTime++;
+        activeMoveControls.jumpTime++;
         if (camera.position.y <= 0) {
             camera.position.y = 0;
-            jumpTime = -1;
+            activeMoveControls.jumpTime = -1;
             if (activeMoveControls.jump) {
-                jumpTime++;
+                activeMoveControls.jumpTime = 0;
             }
         }
     }
@@ -178,9 +183,11 @@ const onAnimationFrameHandler = () => {
         camera.position.add(direction);
     }
 
+    scene.handleCameraCollision(camera.position, previousCamera);
     renderer.render(scene, camera);
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
+
 window.requestAnimationFrame(onAnimationFrameHandler);
 
 // Resize Handler
