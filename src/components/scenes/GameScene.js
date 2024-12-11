@@ -32,6 +32,7 @@ class GameScene extends Scene {
         const floor = new Floor(this);
         this.add(lights, floor);
 
+        // this.add(cube);
         // Populate GUI
         //this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
     }
@@ -44,16 +45,12 @@ class GameScene extends Scene {
         dropCounter++;
         let cube = new Cube(this);
         let col = (Math.floor(Math.random() * 5) - 2) * 2;
-
         if (dropCounter == 100) {
-            debugger;
-
             cube.position.add(new THREE.Vector3(col, 3, 0));
             this.add(cube);
             cubeList.push(cube);
             dropCounter = 101;
         }
-
         if (dropCounter == 301) {
             cube.position.add(new THREE.Vector3(col, 3, 0));
             this.add(cube);
@@ -74,12 +71,12 @@ class GameScene extends Scene {
                 cubeList.push(newCube);
             }
         }
-        // for (let i = 0; i < this.state.updateList.size; i++) {
-        //     let currCube = this.state.updateList[i];
-        //     this.remove(currCube);
-        //     currCube.position.add(new THREE.Vector3(0, -0.2, 0));
-        //     this.add(currCube);
-        // }
+        for (let i = 0; i < this.state.updateList.size; i++) {
+            let currCube = this.state.updateList[i];
+            this.remove(currCube);
+            currCube.position.add(new THREE.Vector3(0, -0.2, 0));
+            this.add(currCube);
+        }
     }
 
     generateCube() {

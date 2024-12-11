@@ -46,48 +46,76 @@ document.addEventListener('pointerlockchange', () => {
     isPointerLocked = document.pointerLockElement === canvas;
 });
 
+// Variables to store the current yaw (horizontal) and pitch (vertical) values
+let pitch = 0; // Vertical angle (rotation around X-axis)
+let yaw = Math.PI; // Horizontal angle (rotation around Y-axis)
+
 // Mouse look
 document.addEventListener('mousemove', (event) => {
+    // Limits for the pitch (to prevent extreme up/down rotations)
+    const MIN_PITCH = THREE.MathUtils.degToRad(-80); // Minimum tilt (downwards)
+    const MAX_PITCH = THREE.MathUtils.degToRad(80); // Maximum tilt (upwards)
+
+    // Create quaternions for pitch and yaw rotations
+    const yawQuaternion = new THREE.Quaternion();
+    const pitchQuaternion = new THREE.Quaternion();
     if (isPointerLocked) {
-        const movementX = event.movementX || 0;
-        const movementY = event.movementY || 0;
-
-        camera.rotation.y += movementX * 0.002;
-        camera.rotation.x += movementY * 0.002;
-
-        // debugger;
-        // Clamp vertical rotation to prevent flipping
-        if (camera.rotation.x >= 0) {
-            camera.rotation.x = Math.max(Math.PI / 2, camera.rotation.x);
-        } else {
-            camera.rotation.x = Math.min(-Math.PI / 2, camera.rotation.x);
-        }
-        // camera.rotation.x = 0;
-        // Math.max(-Math.PI, Math.min(0, camera.rotation.x));
+        // Get mouse movement values from the event
+        let movementX = event.movementX;
+        let movementY = event.movementY;
+        // Update yaw (horizontal movement) based on movementX
+        yaw -= movementX * 0.002; // Adjust the factor for sensitivity
+        // Update pitch (vertical movement) based on movementY
+        pitch -= movementY * 0.002; // Adjust the factor for sensitivity
+        // Clamp the pitch to prevent extreme angles (looking too far up or down)
+        pitch = THREE.MathUtils.clamp(pitch, MIN_PITCH, MAX_PITCH);
+        // Create a quaternion for the yaw (rotate around the Y-axis)
+        yawQuaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+        // Create a quaternion for the pitch (rotate around the X-axis)
+        pitchQuaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
+        // Combine the yaw and pitch quaternions
+        const combinedQuaternion = yawQuaternion.multiply(pitchQuaternion);
+        // Apply the resulting quaternion to the camera
+        camera.rotation.setFromQuaternion(combinedQuaternion);
+        // Update the camera's world matrix
+        camera.updateMatrixWorld();
     }
 });
 
-document.addEventListener('keypress', (event) => {
-    if (event.key == 'w') {
-        // debugger;
-        let direction = new THREE.Vector3(
-            -Math.sin(camera.rotation.y),
-            0,
-            Math.cos(camera.rotation.y)
-        );
+const MOVEMENT_SPEED = 0.1;
+document.addEventListener('keydown', (event) => {
+    if (event.key == 'w' || event.key == 'ArrowUp') {
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
+
         direction.setY(0);
-        direction.normalize().multiplyScalar(0.1);
+        direction.normalize().multiplyScalar(MOVEMENT_SPEED);
         camera.position.add(direction);
     }
-    if (event.key == 's') {
+    if (event.key == 's' || event.key == 'ArrowDown') {
         // hardy har har
-        let direction = new THREE.Vector3(
-            -Math.sin(camera.rotation.y),
-            0,
-            Math.cos(camera.rotation.y)
-        );
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
         direction.setY(0);
-        direction.normalize().multiplyScalar(-0.1);
+        direction.normalize().multiplyScalar(-MOVEMENT_SPEED);
+        camera.position.add(direction);
+    }
+    if (event.key == 'a' || event.key == 'ArrowLeft') {
+        // hardy har har
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
+        direction.setY(0);
+        direction.cross(new THREE.Vector3(0, 1, 0));
+        direction.normalize().multiplyScalar(-MOVEMENT_SPEED);
+        camera.position.add(direction);
+    }
+    if (event.key == 'd' || event.key == 'ArrowRight') {
+        // hardy har har
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
+        direction.setY(0);
+        direction.cross(new THREE.Vector3(0, 1, 0));
+        direction.normalize().multiplyScalar(MOVEMENT_SPEED);
         camera.position.add(direction);
     }
 });
