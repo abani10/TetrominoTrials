@@ -82,7 +82,7 @@ document.addEventListener('mousemove', (event) => {
     }
 });
 
-const MOVEMENT_SPEED = 0.1;
+const MOVEMENT_SPEED = 0.5;
 document.addEventListener('keydown', (event) => {
     if (event.key == 'w' || event.key == 'ArrowUp') {
         let direction = new THREE.Vector3();
