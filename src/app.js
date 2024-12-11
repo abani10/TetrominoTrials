@@ -83,46 +83,101 @@ document.addEventListener('mousemove', (event) => {
 });
 
 const MOVEMENT_SPEED = 0.5;
+let jumpTime = -1;
+let v0 = 1;
+let camGrav = 0.1;
+let activeMoveControls = {
+    up: false,
+    left: false,
+    right: false,
+    down: false,
+    jump: false,
+};
+
 document.addEventListener('keydown', (event) => {
     if (event.key == 'w' || event.key == 'ArrowUp') {
-        let direction = new THREE.Vector3();
-        camera.getWorldDirection(direction);
-
-        direction.setY(0);
-        direction.normalize().multiplyScalar(MOVEMENT_SPEED);
-        camera.position.add(direction);
+        activeMoveControls.up = true;
     }
     if (event.key == 's' || event.key == 'ArrowDown') {
-        // hardy har har
-        let direction = new THREE.Vector3();
-        camera.getWorldDirection(direction);
-        direction.setY(0);
-        direction.normalize().multiplyScalar(-MOVEMENT_SPEED);
-        camera.position.add(direction);
+        activeMoveControls.down = true;
     }
     if (event.key == 'a' || event.key == 'ArrowLeft') {
-        // hardy har har
-        let direction = new THREE.Vector3();
-        camera.getWorldDirection(direction);
-        direction.setY(0);
-        direction.cross(new THREE.Vector3(0, 1, 0));
-        direction.normalize().multiplyScalar(-MOVEMENT_SPEED);
-        camera.position.add(direction);
+        activeMoveControls.left = true;
     }
     if (event.key == 'd' || event.key == 'ArrowRight') {
-        // hardy har har
-        let direction = new THREE.Vector3();
-        camera.getWorldDirection(direction);
-        direction.setY(0);
-        direction.cross(new THREE.Vector3(0, 1, 0));
-        direction.normalize().multiplyScalar(MOVEMENT_SPEED);
-        camera.position.add(direction);
+        activeMoveControls.right = true;
+    }
+    if (event.key == ' ') {
+        jumpTime = 0;
+        activeMoveControls.jump = true;
+    }
+});
+document.addEventListener('keyup', (event) => {
+    if (event.key == 'w' || event.key == 'ArrowUp') {
+        activeMoveControls.up = false;
+    }
+    if (event.key == 's' || event.key == 'ArrowDown') {
+        activeMoveControls.down = false;
+    }
+    if (event.key == 'a' || event.key == 'ArrowLeft') {
+        activeMoveControls.left = false;
+    }
+    if (event.key == 'd' || event.key == 'ArrowRight') {
+        activeMoveControls.right = false;
+    }
+    if (event.key == ' ') {
+        activeMoveControls.jump = false;
     }
 });
 
 // Render Loop
 const onAnimationFrameHandler = () => {
     scene.update();
+
+    // handle jump
+    if (jumpTime >= 0) {
+        let vertSpeed = v0 - camGrav * jumpTime;
+        camera.position.y += vertSpeed;
+        jumpTime++;
+        if (camera.position.y <= 0) {
+            camera.position.y = 0;
+            jumpTime = -1;
+            if (activeMoveControls.jump) {
+                jumpTime++;
+            }
+        }
+    }
+    if (activeMoveControls.up) {
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
+        direction.setY(0);
+        direction.normalize().multiplyScalar(MOVEMENT_SPEED);
+        camera.position.add(direction);
+    }
+    if (activeMoveControls.down) {
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
+        direction.setY(0);
+        direction.normalize().multiplyScalar(-MOVEMENT_SPEED);
+        camera.position.add(direction);
+    }
+    if (activeMoveControls.left) {
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
+        direction.setY(0);
+        direction.cross(new THREE.Vector3(0, 1, 0));
+        direction.normalize().multiplyScalar(-MOVEMENT_SPEED);
+        camera.position.add(direction);
+    }
+    if (activeMoveControls.right) {
+        let direction = new THREE.Vector3();
+        camera.getWorldDirection(direction);
+        direction.setY(0);
+        direction.cross(new THREE.Vector3(0, 1, 0));
+        direction.normalize().multiplyScalar(MOVEMENT_SPEED);
+        camera.position.add(direction);
+    }
+
     renderer.render(scene, camera);
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
