@@ -1,10 +1,13 @@
 import { Group } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 import MODEL from './cube.obj';
+import * as THREE from 'three';
+//import MATERIAL from './cube.mtl';
 
 class Cube extends Group {
-    constructor(parent) {
+    constructor(parent, randcolor) {
         // Call parent Group() constructor
         super();
 
@@ -15,14 +18,28 @@ class Cube extends Group {
             spin: () => this.spin(), // or this.spin.bind(this)
             twirl: 0,
         };
-
+        /* the one that works
         // Load object
         const loader = new OBJLoader();
 
         this.name = 'cube';
         loader.load(MODEL, (object) => {
             this.add(object);
-        });
+        }); */
+
+        this.name = 'cube';
+
+        // Load material first
+        const geometry = new THREE.BoxGeometry(1, 1, 1); 
+        // Dimensions of the cube 
+        const cubecolor = new THREE.Color(randcolor);
+        
+        const material = new THREE.MeshBasicMaterial({ color: cubecolor }); 
+        // Red material 
+        const cube = new THREE.Mesh(geometry, material);
+
+        this.add(cube);
+
 
         // Add self to parent's update list
         parent.addToUpdateList(this);

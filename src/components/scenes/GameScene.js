@@ -59,11 +59,26 @@ class GameScene extends Scene {
         // we can change how we want to do this
         let pieceType = Math.floor(Math.random() * 7);
 
+        // randomly generate a color, but make sure it is matching for all the cubes
+        const colors = [
+            0xff0000, // Red
+            0x00ff00, // Green
+            0x0000ff, // Blue
+            0xffff00, // Yellow
+            0xff00ff, // Magenta
+            0x00ffff, // Cyan
+            0xff7f00, // Orange
+        ];
+
+        const randcolor = colors[Math.floor(Math.random() * colors.length)];
+
+        console.log("RandColor: " + randcolor);
+
         // create the four cubes for the shape
-        let cube1 = new Cube(this);
-        let cube2 = new Cube(this);
-        let cube3 = new Cube(this);
-        let cube4 = new Cube(this);
+        let cube1 = new Cube(this, randcolor);
+        let cube2 = new Cube(this, randcolor);
+        let cube3 = new Cube(this, randcolor);
+        let cube4 = new Cube(this, randcolor);
 
         let two;
         let three;
