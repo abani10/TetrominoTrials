@@ -6,9 +6,15 @@ import * as THREE from 'three';
 
 let dropCounter = 0;
 let cubeLength = 1;
-let cubeList = [];
+let falling = [];
 let resting = [];
-let heightMap = Array(20).fill(-1);
+let xMax = 20;
+let zMax = 10;
+let heightMap = [];
+let maxHeight = 0;
+for(let i = 0; i < xMax + 4; i++) {
+    heightMap[i] = Array(zMax + 4).fill(-1.5);
+} 
 let ceiling = 10;
 let dropTime = 100;
 
@@ -59,83 +65,189 @@ class GameScene extends Scene {
         let cube3 = new Cube(this);
         let cube4 = new Cube(this);
 
-        // assemble the cubes based on what shape pice we're making
-        let col = Math.floor(Math.random() * 20 - 10);
+        let two;
+        let three;
+        let four;
 
-        cube1.position.add(new THREE.Vector3(col, ceiling, 0));
-        if (pieceType == 0) {
-            cube2.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength, 0));
-            cube3.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(-cubeLength, 0, 0));
-            cube4.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(cubeLength, 0, 0));
-        } else if (pieceType == 1) {
-            cube2.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength, 0));
-            cube3.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength * 2, 0));
-            cube4.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(cubeLength, -cubeLength * 2, 0));
-        } else if (pieceType == 2) {
-            cube2.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength, 0));
-            cube3.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength * 2, 0));
-            cube4.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(-cubeLength, -cubeLength * 2, 0));
-        } else if (pieceType == 3) {
-            cube2.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength, 0));
-            cube3.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(-cubeLength, -cubeLength, 0));
-            cube4.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(cubeLength, 0, 0));
-        } else if (pieceType == 4) {
-            cube2.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength, 0));
-            cube3.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(cubeLength, -cubeLength, 0));
-            cube4.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(-cubeLength, 0, 0));
-        } else if (pieceType == 5) {
-            cube2.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength, 0));
-            cube3.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(-cubeLength, -cubeLength, 0));
-            cube4.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(-cubeLength, 0, 0));
-        } else {
-            cube2.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength, 0));
-            cube3.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength * 2, 0));
-            cube4.position
-                .copy(cube1.position)
-                .add(new THREE.Vector3(0, -cubeLength * 3, 0));
+        let xC = 0;
+        let yC = 0;
+        let zC = 0;
+
+        // assemble the cubes based on what shape pice we're making
+        let col = Math.floor(Math.random() * xMax - (xMax / 2));
+        let row = Math.floor(Math.random() * zMax - (zMax / 2));
+        cube1.position.add(new THREE.Vector3(col, maxHeight + ceiling, row));
+        this.add(cube1);
+
+        if (pieceType == 0) { // T PIECE
+            let rotate = Math.floor(Math.random() * 4);
+            let lateral = 0;
+            let vertical = 0;
+            xC = 1;
+            zC = 1;
+            yC = 1;
+            if (rotate == 0) {
+                xC = -1;
+                zC = -1;
+                vertical = -1;
+            } else if (rotate == 1) {
+                lateral = -1;
+            } else if (rotate == 2) {
+                vertical = -1;
+            } else {
+                yC = -1;
+                lateral = -1;
+            }
+            
+            let depth = Math.floor(Math.random() *2);
+            if (depth == 0) {
+                xC = 0;
+            } else {
+                zC = 0;
+            }
+                
+            two = [xC * 1, 0, 1 * zC];
+            three = [0, 1 * yC, 0];
+            four = [lateral * xC,  vertical, lateral * zC];
+        } else if (pieceType == 1) { // L PIECE 1
+            let rotate = Math.floor(Math.random() * 4);
+            let yC2 = 0;
+            let lateral = 0;
+            if (rotate == 0) {
+                xC = -1;
+                zC = -1;
+                yC = 1;
+                yC2 = 2;
+            } else if (rotate == 1) {
+                xC = 1;
+                zC = 1;
+                yC = 1;
+                lateral = 2;
+            } else if (rotate == 2) {
+                xC = -1;
+                zC = -1;
+                yC = -1;
+                lateral = 2;
+            } else {
+                xC = 1;
+                zC = 1;
+                yC = -1;
+                yC2 = -2;
+            }
+
+            let depth = Math.floor(Math.random() *2);
+            if (depth == 0) {
+                xC = 0;
+            } else {
+                zC = 0;
+            }
+                
+            two = [xC * 1, 0, 1 * zC];
+            three = [0, 1 * yC, 0];
+            four = [lateral * xC,  yC2, lateral * zC];
+        } else if (pieceType == 2) { // L PIECE 2
+            let rotate = Math.floor(Math.random() * 4);
+            let yC2 = 0;
+            let lateral = 0;
+            if (rotate == 0) {
+                xC = 1;
+                zC = 1;
+                yC = 1;
+                yC2 = 2;
+            } else if (rotate == 1) {
+                xC = 1;
+                zC = 1;
+                yC = -1;
+                lateral = 2;
+            } else if (rotate == 2) {
+                xC = -1;
+                zC = -1;
+                yC = 1;
+                lateral = 2;
+            } else {
+                xC = -1;
+                zC = -1;
+                yC = -1;
+                yC2 = -2;
+            }
+
+            let depth = Math.floor(Math.random() *2);
+            if (depth == 0) {
+                xC = 0;
+            } else {
+                zC = 0;
+            }
+                
+            two = [xC * 1, 0, 1 * zC];
+            three = [0, 1 * yC, 0];
+            four = [lateral * xC,  yC2, lateral * zC];
+        } else if (pieceType == 3) { // ZIG ZAG 1
+            let rotate = Math.floor(Math.random() * 4);
+            if (rotate == 0) {
+                xC = 1;
+                yC = -1;
+            } else if (rotate == 1) {
+                zC = 1;
+                yC = -1;
+            } else if (rotate == 2) {
+                yC = 1;
+                zC = -1;
+            } else {
+                yC = 1;
+                zC = -1;
+            }
+            two = [Math.abs(1 * xC), 0, Math.abs(1 * zC)];
+            three = [0, 1 * yC , 0];
+            four = [-1 * xC, -1, -1 * zC];
+        } else if (pieceType == 4) { // ZIG ZAG 2
+            let rotate = Math.floor(Math.random() * 4);
+            if (rotate == 0) {
+                xC = 1;
+                yC = -1;
+            } else if (rotate == 1) {
+                zC = 1;
+                yC = -1;
+            } else if (rotate == 2) {
+                yC = 1;
+                zC = -1;
+            } else {
+                yC = 1;
+                zC = -1;
+            }
+            two = [Math.abs(1 * xC) * -1, 0, Math.abs(1 * zC) * -1];
+            three = [0, 1 * yC , 0];
+            four = [1 * xC, -1, 1 * zC];
+        } else if (pieceType == 5) { // SQUARE PIECE
+            let rotate = Math.floor(Math.random() * 2);
+            if (rotate == 0) {
+                xC = 1;
+            } else {
+                zC = 1;
+            }
+            two = [0, -1, 0];
+            three = [-1 * xC, -1, -1 * zC];
+            four = [-1 * xC, 0, -1 * zC];
+        } else { // STRAIGHT PIECE
+            let rotate = Math.floor(Math.random() * 3);
+            if (rotate == 0) {
+                yC = 1;
+            } else if (rotate == 1) {
+                zC = 1;
+            } else {
+                xC = 1;
+            }
+
+            two = [1 * xC, 1 * yC, 1 * zC];
+            three = [2 * xC, 2 * yC, 2* zC];
+            four = [3 * xC, 3 * yC, 3* zC];
         }
 
-        // add the cube pieces to the scene and the cubeList
+
+        cube2.position.copy(cube1.position).add(new THREE.Vector3(cubeLength * two[0], cubeLength * two[1], cubeLength * two[2]));
+        cube3.position.copy(cube1.position).add(new THREE.Vector3(cubeLength * three[0], cubeLength * three[1], cubeLength * three[2]));
+        cube4.position.copy(cube1.position).add(new THREE.Vector3(cubeLength * four[0], cubeLength * four[1], cubeLength * four[2]));
+
+        // add the cube pieces to the scene and the falling list
         this.add(cube1);
         this.add(cube2);
         this.add(cube3);
@@ -147,22 +259,36 @@ class GameScene extends Scene {
         pieceList.push(cube3);
         pieceList.push(cube4);
 
-        cubeList.push(pieceList);
+        falling.push(pieceList);
     }
 
     dropPieces() {
-        let tempSize = cubeList.length;
+        let tempSize = falling.length;
+        // for each falling piece
         for (let i = 0; i < tempSize; i++) {
-            let pieceList = cubeList.shift();
+            // shift off the array with all the cubes in that piece
+            let pieceList = falling.shift();
+
+            // create a newPieceList to keep the shifted down cubes
             let newPieceList = [];
+
+            // create an oldPieceList to keep the original cubes just in case
             let oldPieceList = [];
+
+            // default switch for adding the newPiece
             let added = true;
 
+            // for each of the four cubes
             for (let j = 0; j < 4; j++) {
+                // create a new cube
                 let newCube = new Cube(this);
+
+                // take the old cube of the  piece list
                 let oldCube = pieceList.shift();
+                // put that old cube onto the old piece list
                 oldPieceList.push(oldCube);
-                // shift downwards
+
+                // shift the new cube downwards
                 newCube.position.x = oldCube.position.x;
                 newCube.position.y = oldCube.position.y - cubeLength;
                 newCube.position.z = oldCube.position.z;
@@ -170,32 +296,14 @@ class GameScene extends Scene {
                 // height map collisions
                 if (
                     newCube.position.y <=
-                    heightMap[Math.floor(newCube.position.x) + 10]
+                    heightMap[newCube.position.x + (xMax / 2)][newCube.position.z + (zMax / 2)]
                 ) {
-                    for (const cubeNew of newPieceList) {
-                        cubeNew.position.y += cubeLength;
-                        heightMap[Math.floor(cubeNew.position.x) + 10] =
-                            Math.max(
-                                heightMap[Math.floor(cubeNew.position.x) + 10],
-                                cubeNew.position.y
-                            );
-                        pieceList.push(cubeNew);
-                    }
-
-                    // add the piece back to the old piece list and change height map value
-                    pieceList.push(oldCube);
-                    heightMap[Math.floor(oldCube.position.x) + 10] = Math.max(
-                        heightMap[Math.floor(oldCube.position.x) + 10],
-                        oldCube.position.y
-                    );
-
-                    // add it to the resting place
-                    resting.push(pieceList);
-                    // tell it not to add the (empty) pieceList to cubeList (no longer a falling piece)
+                    // we don't want to use the new adjusted cubes anymore
+                    // so turn the switch off
                     added = false;
-                    break;
                 }
 
+                // add the new cube onto the new piece list
                 newPieceList.push(newCube);
             }
             if (added) {
@@ -205,7 +313,12 @@ class GameScene extends Scene {
                 for (const newer of newPieceList) {
                     this.add(newer);
                 }
-                cubeList.push(newPieceList);
+                falling.push(newPieceList);
+            } else {
+                for (const cube of oldPieceList) {
+                    heightMap[Math.floor(cube.position.x) + (xMax/2)][Math.floor(cube.position.z) + (zMax/2)] = Math.max(heightMap[Math.floor(cube.position.x) + (xMax/2)][Math.floor(cube.position.z) + (zMax/2)], cube.position.y);
+                }
+                resting.push(oldPieceList);
             }
         }
     }
@@ -213,6 +326,7 @@ class GameScene extends Scene {
     update() {
         // increment the counter for dropping
         dropCounter++;
+
         // generate a piece every so often
         if (dropCounter % (dropTime * 4) == 0) {
             this.generatePiece();
@@ -221,11 +335,12 @@ class GameScene extends Scene {
         if (dropCounter % dropTime == 0) {
             this.dropPieces();
         }
+            
     }
 
     handleFallCollision(cameraPosition) {
         let correction = Number.NEGATIVE_INFINITY;
-        let allPieces = [...resting, ...cubeList];
+        let allPieces = [...resting, ...falling];
         for (let piece of allPieces) {
             for (let cube of piece) {
                 let center = cube.position;
@@ -255,7 +370,7 @@ class GameScene extends Scene {
         return correction;
     }
     bumpHeadCollisions(cameraPosition) {
-        let allPieces = [...resting, ...cubeList];
+        let allPieces = [...resting, ...falling];
         for (let piece of allPieces) {
             for (let cube of piece) {
                 let center = cube.position;
@@ -279,7 +394,7 @@ class GameScene extends Scene {
     }
 
     handleSideCollisions(cameraPosition, previousCamera) {
-        let allPieces = [...resting, ...cubeList];
+        let allPieces = [...resting, ...falling];
         for (let piece of allPieces) {
             for (let cube of piece) {
                 let center = cube.position;
