@@ -17,29 +17,52 @@ class Cube extends Group {
             bob: true,
             spin: () => this.spin(), // or this.spin.bind(this)
             twirl: 0,
+            color: null,
         };
-        /* the one that works
+        // Create the color
+        const cubecolor = new THREE.Color(randcolor);
+        this.state.color = cubecolor;
+
+        // Load the object
+        const loader = new OBJLoader();
+        loader.load(MODEL, (object) => {
+            // Traverse the loaded object and replace materials
+            object.traverse((child) => {
+                if (child.isMesh) {
+                    // Replace material with custom material
+                    child.material = new THREE.MeshPhongMaterial({
+                        color: cubecolor,
+                    });
+                }
+            });
+
+            // Add the object to this group
+            this.add(object);
+        });
+
+        /*
         // Load object
         const loader = new OBJLoader();
 
         this.name = 'cube';
         loader.load(MODEL, (object) => {
             this.add(object);
-        }); */
+        }); 
 
         this.name = 'cube';
 
         // Load material first
-        const geometry = new THREE.BoxGeometry(1, 1, 1); 
-        // Dimensions of the cube 
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        // Dimensions of the cube
+
         const cubecolor = new THREE.Color(randcolor);
-        
-        const material = new THREE.MeshBasicMaterial({ color: cubecolor }); 
-        // Red material 
-        const cube = new THREE.Mesh(geometry, material);
+        this.state.color = cubecolor;
 
-        this.add(cube);
+        const material = new THREE.MeshPhongMaterial({ color: cubecolor });
+        // Red material
+        const cube = new THREE.Mesh(geometry, material); 
 
+        this.add(cube); */
 
         // Add self to parent's update list
         parent.addToUpdateList(this);

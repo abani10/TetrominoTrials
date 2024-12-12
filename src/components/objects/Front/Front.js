@@ -1,6 +1,7 @@
 import { Group } from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import MODEL from './front.obj';
 
 class Front extends Group {
@@ -18,6 +19,7 @@ class Front extends Group {
 
         // Load object
         const loader = new OBJLoader();
+        const materialloader = new MTLLoader();
 
         this.name = 'front';
         loader.load(MODEL, (object) => {

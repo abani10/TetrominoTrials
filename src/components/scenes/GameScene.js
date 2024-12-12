@@ -8,15 +8,16 @@ let dropCounter = 0;
 let cubeLength = 1;
 let falling = [];
 let resting = [];
-let xMax = 20;
-let zMax = 10;
+let xMax = 12;
+let zMax = 12;
 let heightMap = [];
 let maxHeight = 0;
-for(let i = 0; i < xMax + 4; i++) {
-    heightMap[i] = Array(zMax + 4).fill(-1.5);
-} 
+let confinedToArena = true;
+for (let i = 0; i < xMax + 8; i++) {
+    heightMap[i] = Array(zMax + 8).fill(-1.25);
+}
 let ceiling = 10;
-let dropTime = 100;
+let dropTime = 10;
 
 class GameScene extends Scene {
     constructor() {
@@ -37,11 +38,12 @@ class GameScene extends Scene {
         // const land = new Land();
         // const flower = new Flower(this);
         const lights = new BasicLights();
-        const cube = new Cube(this);
-        //const front = new Front(this);
+        // const cube = new Cube(this);
+
+        const front = new Front(this);
 
         const floor = new Floor(this);
-        this.add(lights, floor);
+        this.add(lights, floor, front);
 
         // this.add(cube);
         // let list = [cube];
@@ -69,10 +71,7 @@ class GameScene extends Scene {
             0x00ffff, // Cyan
             0xff7f00, // Orange
         ];
-
         const randcolor = colors[Math.floor(Math.random() * colors.length)];
-
-        console.log("RandColor: " + randcolor);
 
         // create the four cubes for the shape
         let cube1 = new Cube(this, randcolor);
@@ -89,12 +88,13 @@ class GameScene extends Scene {
         let zC = 0;
 
         // assemble the cubes based on what shape pice we're making
-        let col = Math.floor(Math.random() * xMax - (xMax / 2));
-        let row = Math.floor(Math.random() * zMax - (zMax / 2));
+        let col = Math.floor(Math.random() * xMax - xMax / 2);
+        let row = Math.floor(Math.random() * zMax - zMax / 2);
         cube1.position.add(new THREE.Vector3(col, maxHeight + ceiling, row));
         this.add(cube1);
 
-        if (pieceType == 0) { // T PIECE
+        if (pieceType == 0) {
+            // T PIECE
             let rotate = Math.floor(Math.random() * 4);
             let lateral = 0;
             let vertical = 0;
@@ -113,18 +113,19 @@ class GameScene extends Scene {
                 yC = -1;
                 lateral = -1;
             }
-            
-            let depth = Math.floor(Math.random() *2);
+
+            let depth = Math.floor(Math.random() * 2);
             if (depth == 0) {
                 xC = 0;
             } else {
                 zC = 0;
             }
-                
+
             two = [xC * 1, 0, 1 * zC];
             three = [0, 1 * yC, 0];
-            four = [lateral * xC,  vertical, lateral * zC];
-        } else if (pieceType == 1) { // L PIECE 1
+            four = [lateral * xC, vertical, lateral * zC];
+        } else if (pieceType == 1) {
+            // L PIECE 1
             let rotate = Math.floor(Math.random() * 4);
             let yC2 = 0;
             let lateral = 0;
@@ -150,17 +151,18 @@ class GameScene extends Scene {
                 yC2 = -2;
             }
 
-            let depth = Math.floor(Math.random() *2);
+            let depth = Math.floor(Math.random() * 2);
             if (depth == 0) {
                 xC = 0;
             } else {
                 zC = 0;
             }
-                
+
             two = [xC * 1, 0, 1 * zC];
             three = [0, 1 * yC, 0];
-            four = [lateral * xC,  yC2, lateral * zC];
-        } else if (pieceType == 2) { // L PIECE 2
+            four = [lateral * xC, yC2, lateral * zC];
+        } else if (pieceType == 2) {
+            // L PIECE 2
             let rotate = Math.floor(Math.random() * 4);
             let yC2 = 0;
             let lateral = 0;
@@ -186,17 +188,18 @@ class GameScene extends Scene {
                 yC2 = -2;
             }
 
-            let depth = Math.floor(Math.random() *2);
+            let depth = Math.floor(Math.random() * 2);
             if (depth == 0) {
                 xC = 0;
             } else {
                 zC = 0;
             }
-                
+
             two = [xC * 1, 0, 1 * zC];
             three = [0, 1 * yC, 0];
-            four = [lateral * xC,  yC2, lateral * zC];
-        } else if (pieceType == 3) { // ZIG ZAG 1
+            four = [lateral * xC, yC2, lateral * zC];
+        } else if (pieceType == 3) {
+            // ZIG ZAG 1
             let rotate = Math.floor(Math.random() * 4);
             if (rotate == 0) {
                 xC = 1;
@@ -212,9 +215,10 @@ class GameScene extends Scene {
                 zC = -1;
             }
             two = [Math.abs(1 * xC), 0, Math.abs(1 * zC)];
-            three = [0, 1 * yC , 0];
+            three = [0, 1 * yC, 0];
             four = [-1 * xC, -1, -1 * zC];
-        } else if (pieceType == 4) { // ZIG ZAG 2
+        } else if (pieceType == 4) {
+            // ZIG ZAG 2
             let rotate = Math.floor(Math.random() * 4);
             if (rotate == 0) {
                 xC = 1;
@@ -230,9 +234,10 @@ class GameScene extends Scene {
                 zC = -1;
             }
             two = [Math.abs(1 * xC) * -1, 0, Math.abs(1 * zC) * -1];
-            three = [0, 1 * yC , 0];
+            three = [0, 1 * yC, 0];
             four = [1 * xC, -1, 1 * zC];
-        } else if (pieceType == 5) { // SQUARE PIECE
+        } else if (pieceType == 5) {
+            // SQUARE PIECE
             let rotate = Math.floor(Math.random() * 2);
             if (rotate == 0) {
                 xC = 1;
@@ -242,7 +247,8 @@ class GameScene extends Scene {
             two = [0, -1, 0];
             three = [-1 * xC, -1, -1 * zC];
             four = [-1 * xC, 0, -1 * zC];
-        } else { // STRAIGHT PIECE
+        } else {
+            // STRAIGHT PIECE
             let rotate = Math.floor(Math.random() * 3);
             if (rotate == 0) {
                 yC = 1;
@@ -253,14 +259,37 @@ class GameScene extends Scene {
             }
 
             two = [1 * xC, 1 * yC, 1 * zC];
-            three = [2 * xC, 2 * yC, 2* zC];
-            four = [3 * xC, 3 * yC, 3* zC];
+            three = [2 * xC, 2 * yC, 2 * zC];
+            four = [3 * xC, 3 * yC, 3 * zC];
         }
 
-
-        cube2.position.copy(cube1.position).add(new THREE.Vector3(cubeLength * two[0], cubeLength * two[1], cubeLength * two[2]));
-        cube3.position.copy(cube1.position).add(new THREE.Vector3(cubeLength * three[0], cubeLength * three[1], cubeLength * three[2]));
-        cube4.position.copy(cube1.position).add(new THREE.Vector3(cubeLength * four[0], cubeLength * four[1], cubeLength * four[2]));
+        cube2.position
+            .copy(cube1.position)
+            .add(
+                new THREE.Vector3(
+                    cubeLength * two[0],
+                    cubeLength * two[1],
+                    cubeLength * two[2]
+                )
+            );
+        cube3.position
+            .copy(cube1.position)
+            .add(
+                new THREE.Vector3(
+                    cubeLength * three[0],
+                    cubeLength * three[1],
+                    cubeLength * three[2]
+                )
+            );
+        cube4.position
+            .copy(cube1.position)
+            .add(
+                new THREE.Vector3(
+                    cubeLength * four[0],
+                    cubeLength * four[1],
+                    cubeLength * four[2]
+                )
+            );
 
         // add the cube pieces to the scene and the falling list
         this.add(cube1);
@@ -277,7 +306,7 @@ class GameScene extends Scene {
         falling.push(pieceList);
     }
 
-    dropPieces() {
+    dropPieces(cameraPosition) {
         let tempSize = falling.length;
         // for each falling piece
         for (let i = 0; i < tempSize; i++) {
@@ -295,11 +324,12 @@ class GameScene extends Scene {
 
             // for each of the four cubes
             for (let j = 0; j < 4; j++) {
-                // create a new cube
-                let newCube = new Cube(this);
-
                 // take the old cube of the  piece list
                 let oldCube = pieceList.shift();
+
+                // create a new cube
+                let newCube = new Cube(this, oldCube.state.color);
+
                 // put that old cube onto the old piece list
                 oldPieceList.push(oldCube);
 
@@ -310,12 +340,35 @@ class GameScene extends Scene {
 
                 // height map collisions
                 if (
+                    heightMap == undefined ||
+                    heightMap[newCube.position.x + xMax / 2 + 4] == undefined
+                ) {
+                    debugger;
+                }
+                if (
                     newCube.position.y <=
-                    heightMap[newCube.position.x + (xMax / 2)][newCube.position.z + (zMax / 2)]
+                    heightMap[newCube.position.x + xMax / 2 + 4][
+                        newCube.position.z + zMax / 2 + 4
+                    ]
                 ) {
                     // we don't want to use the new adjusted cubes anymore
                     // so turn the switch off
                     added = false;
+                }
+
+                // checking for if a block dropped on your head
+                let center = newCube.position;
+                let halfLength = cubeLength / 2;
+                let inCube =
+                    cameraPosition.x >= center.x - halfLength &&
+                    cameraPosition.x <= center.x + halfLength &&
+                    cameraPosition.y >= center.y - halfLength &&
+                    cameraPosition.y <= center.y + halfLength &&
+                    cameraPosition.z >= center.z - halfLength &&
+                    cameraPosition.z <= center.z + halfLength;
+                if (inCube) {
+                    // you die!
+                    this.endGame();
                 }
 
                 // add the new cube onto the new piece list
@@ -331,14 +384,21 @@ class GameScene extends Scene {
                 falling.push(newPieceList);
             } else {
                 for (const cube of oldPieceList) {
-                    heightMap[Math.floor(cube.position.x) + (xMax/2)][Math.floor(cube.position.z) + (zMax/2)] = Math.max(heightMap[Math.floor(cube.position.x) + (xMax/2)][Math.floor(cube.position.z) + (zMax/2)], cube.position.y);
+                    heightMap[Math.floor(cube.position.x) + xMax / 2 + 4][
+                        Math.floor(cube.position.z) + zMax / 2 + 4
+                    ] = Math.max(
+                        heightMap[Math.floor(cube.position.x) + xMax / 2 + 4][
+                            Math.floor(cube.position.z) + zMax / 2 + 4
+                        ],
+                        cube.position.y
+                    );
                 }
                 resting.push(oldPieceList);
             }
         }
     }
 
-    update() {
+    update(cameraPosition) {
         // increment the counter for dropping
         dropCounter++;
 
@@ -348,9 +408,8 @@ class GameScene extends Scene {
         }
         // every so often, move all pieces downwards
         if (dropCounter % dropTime == 0) {
-            this.dropPieces();
+            this.dropPieces(cameraPosition);
         }
-            
     }
 
     handleFallCollision(cameraPosition) {
@@ -413,7 +472,7 @@ class GameScene extends Scene {
         for (let piece of allPieces) {
             for (let cube of piece) {
                 let center = cube.position;
-                let halfLength = cubeLength / 2;
+                let halfLength = cubeLength / 2 + 0.05;
                 let inCube =
                     cameraPosition.x >= center.x - halfLength &&
                     cameraPosition.x <= center.x + halfLength &&
@@ -450,21 +509,47 @@ class GameScene extends Scene {
                     zScale = 10e5;
                 }
                 let scale = Math.min(xScale, zScale);
-                console.log(xScale, zScale, scale);
-                if (isNaN(scale)) {
-                    debugger;
-                }
-                console.log(
-                    cameraPosition
-                        .clone()
-                        .add(direction.clone().multiplyScalar(scale))
-                );
                 return direction.multiplyScalar(scale + 0.04);
+            }
+        }
+        if (confinedToArena) {
+            let outOfBounds = null;
+
+            if (cameraPosition.x < -xMax / 2) {
+                outOfBounds = new THREE.Vector3(
+                    -xMax / 2 - cameraPosition.x,
+                    0,
+                    0
+                );
+            } else if (cameraPosition.x > xMax / 2) {
+                outOfBounds = new THREE.Vector3(
+                    xMax / 2 - cameraPosition.x,
+                    0,
+                    0
+                );
+            } else if (cameraPosition.z < -zMax / 2) {
+                outOfBounds = new THREE.Vector3(
+                    -zMax / 2 - cameraPosition.z,
+                    0,
+                    0
+                );
+            } else if (cameraPosition.z > zMax / 2) {
+                outOfBounds = new THREE.Vector3(
+                    zMax / 2 - cameraPosition.z,
+                    0,
+                    0
+                );
+            }
+            if (outOfBounds != null) {
+                return outOfBounds;
             }
         }
         return null;
     }
 
+    endGame() {
+        console.log('you died');
+    }
     generateCube() {
         const newCube = new Cube(this);
 

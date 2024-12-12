@@ -12,6 +12,7 @@ import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { GameScene } from 'scenes';
 import * as THREE from 'three';
 
+let gameStart = false;
 // Initialize core ThreeJS components
 const scene = new GameScene();
 //const camera = new PerspectiveCamera();
@@ -34,12 +35,26 @@ document.body.style.margin = 0;
 document.body.style.overflow = 'hidden';
 document.body.appendChild(renderer.domElement);
 
+// START BACKGROUND MUSIC
+const listener = new THREE.AudioListener();
+camera.add(listener);
+const bgMusic = new THREE.Audio(listener);
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load('/src/sounds/Myuu-Tetris-Dark-Version.mp3', function (buffer) {
+    bgMusic.setBuffer(buffer);
+    bgMusic.setLoop(true);
+    bgMusic.setVolume(0.3);
+    bgMusic.play();
+});
+
 // Enable Pointer Lock
 let isPointerLocked = false;
 const canvas = renderer.domElement;
 
 canvas.addEventListener('click', () => {
-    canvas.requestPointerLock();
+    if (gameStart) {
+        canvas.requestPointerLock();
+    }
 });
 
 document.addEventListener('pointerlockchange', () => {
@@ -82,10 +97,10 @@ document.addEventListener('mousemove', (event) => {
     }
 });
 
-const MOVEMENT_SPEED = 0.05;
-const v0 = 1;
-const camGrav = 0.1;
-const MAX_FALL = -0.1;
+const MOVEMENT_SPEED = 0.125;
+const v0 = 0.7;
+const camGrav = 0.09;
+const MAX_FALL = -0.15;
 let activeMoveControls = {
     up: false,
     left: false,
@@ -137,7 +152,7 @@ document.addEventListener('keyup', (event) => {
 // Render Loop
 const onAnimationFrameHandler = () => {
     let previousCamera = camera.position.clone();
-    scene.update();
+    scene.update(camera.position);
 
     if (activeMoveControls.up) {
         let direction = new THREE.Vector3();
@@ -188,6 +203,9 @@ const onAnimationFrameHandler = () => {
         activeMoveControls.jumpTime++;
         if (camera.position.y <= 0) {
             camera.position.y = 0;
+            if (activeMoveControls.fallVelocity > 0) {
+                activeMoveControls.fallVelocity += camGrav / 2;
+            }
             activeMoveControls.jumpTime = -1;
             activeMoveControls.fallVelocity = 0;
             if (activeMoveControls.jump) {
@@ -236,123 +254,3 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 });
-
-// Version 2 Below
-
-// // import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
-// import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
-// import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
-// import { GameScene } from 'scenes';
-// import * as THREE from 'three';
-
-// // Initialize core ThreeJS components
-// const scene = new GameScene();
-// //const camera = new PerspectiveCamera();
-// const camera = new PerspectiveCamera(
-//     75,
-//     window.innerWidth / window.innerHeight,
-//     0.1,
-//     1000
-// );
-
-// // Set up camera
-// camera.position.set(6, 3, -10);
-// camera.lookAt(new Vector3(0, 0, 0));
-
-// // Initialize Renderer
-// const renderer = new WebGLRenderer({ antialias: true });
-// renderer.setPixelRatio(window.devicePixelRatio);
-// renderer.setSize(window.innerWidth, window.innerHeight);
-// document.body.style.margin = 0;
-// document.body.style.overflow = 'hidden';
-// document.body.appendChild(renderer.domElement);
-
-// // Initialize FirstPersonControls
-// // const controls = new FirstPersonControls(camera, renderer.domElement);
-// // controls.movementSpeed = 5;
-// // controls.lookSpeed = 0.1;
-// // controls.mouseDragOn = true;
-
-// // initializae PointerLockControls
-// const controls = new PointerLockControls(camera, renderer.domElement);
-// controls.pointerSpeed = 0.1;
-// controls.lock();
-
-// // Render Loop
-// const clock = new THREE.Clock();
-// const onAnimationFrameHandler = () => {
-//     const delta = clock.getDelta();
-//     // controls.update(delta); // Update first-person controls
-//     renderer.render(scene, camera); // Render the scene
-//     window.requestAnimationFrame(onAnimationFrameHandler); // Continue the loop
-// };
-// window.requestAnimationFrame(onAnimationFrameHandler);
-
-// // Resize Handler
-// window.addEventListener('resize', () => {
-//     renderer.setSize(window.innerWidth, window.innerHeight);
-//     camera.aspect = window.innerWidth / window.innerHeight;
-//     camera.updateProjectionMatrix();
-// });
-
-/// Version 1 Below
-
-// // Initialize core ThreeJS components
-// const scene = new GameScene();
-// const camera = new PerspectiveCamera();
-// const renderer = new WebGLRenderer({ antialias: true });
-
-// // Set up camera
-// camera.position.set(6, 3, -10);
-// camera.lookAt(new Vector3(0, 0, 0));
-
-// // Set up renderer, canvas, and minor CSS adjustments
-// renderer.setPixelRatio(window.devicePixelRatio);
-// const canvas = renderer.domElement;
-// canvas.style.display = 'block'; // Removes padding below canvas
-// document.body.style.margin = 0; // Removes margin around page
-// document.body.style.overflow = 'hidden'; // Fix scrolling
-// document.body.appendChild(canvas);
-
-// // Set up controls
-// // const controls = new OrbitControls(camera, canvas);
-// // controls.enableDamping = true;
-// // controls.enablePan = false;
-// // controls.minDistance = 4;
-// // controls.maxDistance = 16;
-// // controls.update();
-
-// // // set up FP controls
-// const controls = new FirstPersonControls(camera, canvas);
-// controls.lookSpeed = 0.1;
-// controls.movementSpeed = 0.1;
-// controls.update();
-// // debugger;
-// // Render loop
-
-// const clock = new THREE.Clock(); // Import Clock from Three.js
-// const onAnimationFrameHandler = () => {
-//     const delta = clock.getDelta(); // Get elapsed time since last frame
-//     controls.update(delta); // Update controls with delta
-//     renderer.render(scene, camera); // Render the scene
-//     scene.update && scene.update(delta); // Update scene if `update` method exists
-//     window.requestAnimationFrame(onAnimationFrameHandler); // Continue loop
-// };
-
-// // const onAnimationFrameHandler = (timeStamp) => {
-// //     controls.update();
-// //     renderer.render(scene, camera);
-// //     scene.update && scene.update(timeStamp);
-// //     window.requestAnimationFrame(onAnimationFrameHandler);
-// // };
-// window.requestAnimationFrame(onAnimationFrameHandler);
-
-// // Resize Handler
-// const windowResizeHandler = () => {
-//     const { innerHeight, innerWidth } = window;
-//     renderer.setSize(innerWidth, innerHeight);
-//     camera.aspect = innerWidth / innerHeight;
-//     camera.updateProjectionMatrix();
-// };
-// windowResizeHandler();
-// window.addEventListener('resize', windowResizeHandler, false);
