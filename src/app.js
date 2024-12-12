@@ -23,7 +23,7 @@ const camera = new PerspectiveCamera(
 );
 
 // Set up camera
-camera.position.set(0, 1, 5);
+camera.position.set(0, 1, -5);
 camera.lookAt(new Vector3(0, 0, 0));
 
 // Initialize Renderer
@@ -82,10 +82,10 @@ document.addEventListener('mousemove', (event) => {
     }
 });
 
-const MOVEMENT_SPEED = 0.2;
-const v0 = 3;
+const MOVEMENT_SPEED = 0.05;
+const v0 = 1;
 const camGrav = 0.1;
-const MAX_SPEED = 0.1;
+const MAX_FALL = -0.1;
 let activeMoveControls = {
     up: false,
     left: false,
@@ -93,6 +93,7 @@ let activeMoveControls = {
     down: false,
     jump: false,
     jumpTime: -1,
+    fallVelocity: 0,
 };
 
 document.addEventListener('keydown', (event) => {
@@ -138,20 +139,6 @@ const onAnimationFrameHandler = () => {
     let previousCamera = camera.position.clone();
     scene.update();
 
-    // handle jump
-    if (activeMoveControls.jumpTime >= 0) {
-        let vertSpeed = v0 - camGrav * activeMoveControls.jumpTime;
-        vertSpeed = Math.min(vertSpeed, MAX_SPEED);
-        camera.position.y += vertSpeed;
-        activeMoveControls.jumpTime++;
-        if (camera.position.y <= 0) {
-            camera.position.y = 0;
-            activeMoveControls.jumpTime = -1;
-            if (activeMoveControls.jump) {
-                activeMoveControls.jumpTime = 0;
-            }
-        }
-    }
     if (activeMoveControls.up) {
         let direction = new THREE.Vector3();
         camera.getWorldDirection(direction);
@@ -182,8 +169,61 @@ const onAnimationFrameHandler = () => {
         direction.normalize().multiplyScalar(MOVEMENT_SPEED);
         camera.position.add(direction);
     }
+    let correction = scene.handleSideCollisions(
+        camera.position,
+        previousCamera
+    );
+    if (correction != null) {
+        camera.position.add(correction);
+    }
 
-    scene.handleCameraCollision(camera.position, previousCamera);
+    // handle jump
+    if (activeMoveControls.jumpTime >= 0) {
+        activeMoveControls.fallVelocity -= camGrav;
+        activeMoveControls.fallVelocity = Math.max(
+            activeMoveControls.fallVelocity,
+            MAX_FALL
+        );
+        camera.position.y += activeMoveControls.fallVelocity;
+        activeMoveControls.jumpTime++;
+        if (camera.position.y <= 0) {
+            camera.position.y = 0;
+            activeMoveControls.jumpTime = -1;
+            activeMoveControls.fallVelocity = 0;
+            if (activeMoveControls.jump) {
+                activeMoveControls.jumpTime = 0;
+                activeMoveControls.fallVelocity = v0;
+            }
+        }
+    }
+
+    if (activeMoveControls.fallVelocity <= 0) {
+        let correction = scene.handleFallCollision(camera.position);
+        if (correction > MAX_FALL) {
+            // camera is inside a cube - correct position and stop fall
+            camera.position.add(new THREE.Vector3(0, correction + 0.2, 0));
+            activeMoveControls.jumpTime = -1;
+            activeMoveControls.fallVelocity = 0;
+            if (activeMoveControls.jump) {
+                activeMoveControls.jumpTime = 0;
+                activeMoveControls.fallVelocity = v0;
+            }
+
+            // } else if (correction > - MAX_FALL) { // on top of cube, correct position and stop fall
+        } else if (camera.position.y > 0.2) {
+            // start or continue fall
+            if (activeMoveControls.jumpTime == -1) {
+                activeMoveControls.jumpTime = 0;
+            }
+        }
+    } else {
+        correction = scene.bumpHeadCollisions(camera.position);
+        if (correction != 0) {
+            camera.position.add(new THREE.Vector3(0, correction + 0.01, 0));
+            activeMoveControls.fallVelocity = 0;
+        }
+    }
+
     renderer.render(scene, camera);
     window.requestAnimationFrame(onAnimationFrameHandler);
 };

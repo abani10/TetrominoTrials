@@ -37,10 +37,9 @@ class GameScene extends Scene {
         const floor = new Floor(this);
         this.add(lights, floor);
 
-        cube.position.add(new THREE.Vector3(0, 1, 0));
-        this.add(cube);
-        let list = [cube];
-        resting.push(list);
+        // this.add(cube);
+        // let list = [cube];
+        // resting.push(list);
         // Populate GUI
         //this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
     }
@@ -212,80 +211,130 @@ class GameScene extends Scene {
     }
 
     update() {
-        // // increment the counter for dropping
-        // dropCounter++;
-        // // generate a piece every so often
-        // if (dropCounter % (dropTime * 4) == 0) {
-        //     this.generatePiece();
-        // }
-        // // every so often, move all pieces downwards
-        // if (dropCounter % dropTime == 0) {
-        //     this.dropPieces();
-        // }
+        // increment the counter for dropping
+        dropCounter++;
+        // generate a piece every so often
+        if (dropCounter % (dropTime * 4) == 0) {
+            this.generatePiece();
+        }
+        // every so often, move all pieces downwards
+        if (dropCounter % dropTime == 0) {
+            this.dropPieces();
+        }
     }
 
-    handleCameraCollision(cameraPosition, previousCameraPosition) {
-        for (let piece of resting) {
+    handleFallCollision(cameraPosition) {
+        let correction = Number.NEGATIVE_INFINITY;
+        let allPieces = [...resting, ...cubeList];
+        for (let piece of allPieces) {
             for (let cube of piece) {
                 let center = cube.position;
                 let halfLength = cubeLength / 2;
-                let insideCube = true;
-                if (
-                    cameraPosition.x < center.x - halfLength ||
-                    cameraPosition.x < center.x + halfLength
-                ) {
-                    insideCube = false;
-                } else if (
-                    cameraPosition.y < center.y - halfLength ||
-                    cameraPosition.y < center.y + halfLength
-                ) {
-                    insideCube = false;
-                } else if (
-                    cameraPosition.z < center.z - halfLength ||
-                    cameraPosition.z < center.z + halfLength
-                ) {
-                    insideCube = false;
-                }
-                if (!insideCube) {
+                let inOrAboveCube =
+                    cameraPosition.x >= center.x - halfLength &&
+                    cameraPosition.x <= center.x + halfLength &&
+                    cameraPosition.y >= center.y - halfLength &&
+                    cameraPosition.z >= center.z - halfLength &&
+                    cameraPosition.z <= center.z + halfLength;
+
+                if (!inOrAboveCube) {
                     continue;
                 }
-                // let kickDirection = previousCameraPosition
-                //     .clone()
-                //     .sub(previousCameraPosition);
-                kickDirection = new THREE.Vector3(0, 1, 0);
-                let xshift = Math.abs(
-                    center.x +
-                        Math.sign(cameraPosition.x) * halfLength -
-                        cameraPosition.x
-                );
-                let yshift = Math.abs(
-                    center.y +
-                        Math.sign(cameraPosition.y) * halfLength -
-                        cameraPosition.y
-                );
-                let zshift = Math.abs(
-                    center.z +
-                        Math.sign(cameraPosition.z) * halfLength -
-                        cameraPosition.z
-                );
-                let scale;
-                // if (xshift < yshift) {
-                //     if (xshift < zshift) {
-                //         scale = xshift / kickDirection.x;
-                //     } else {
-                //         scale = zshift / kickDirection.z;
-                //     }
-                // } else if (yshift < zshift) {
-                //     scale = yshift / kickDirection.y;
-                // } else {
-                //     scale = zshift / kickDirection.z;
-                // }
-                cameraPosition.add(
-                    kickDirection.multiplyScalar(scale + 10.002)
+                let displacement =
+                    cube.position.y + halfLength - cameraPosition.y;
+                if (displacement > 0) {
+                    return displacement; // if inside the cube that's all we need
+                }
+                correction = Math.max(
+                    /// if above the cube, find closest cube to determine if we need to stop falling
+                    displacement,
+                    correction
                 );
             }
         }
+        return correction;
     }
+    bumpHeadCollisions(cameraPosition) {
+        let allPieces = [...resting, ...cubeList];
+        for (let piece of allPieces) {
+            for (let cube of piece) {
+                let center = cube.position;
+                let halfLength = cubeLength / 2;
+                let inCube =
+                    cameraPosition.x >= center.x - halfLength &&
+                    cameraPosition.x <= center.x + halfLength &&
+                    cameraPosition.y >= center.y - halfLength &&
+                    cameraPosition.y <= center.y + halfLength &&
+                    cameraPosition.z >= center.z - halfLength &&
+                    cameraPosition.z <= center.z + halfLength;
+
+                if (!inCube) {
+                    continue;
+                }
+                return cube.position.y - halfLength - cameraPosition.y;
+                // if inside the cube that's all we need
+            }
+        }
+        return 0;
+    }
+
+    handleSideCollisions(cameraPosition, previousCamera) {
+        let allPieces = [...resting, ...cubeList];
+        for (let piece of allPieces) {
+            for (let cube of piece) {
+                let center = cube.position;
+                let halfLength = cubeLength / 2;
+                let inCube =
+                    cameraPosition.x >= center.x - halfLength &&
+                    cameraPosition.x <= center.x + halfLength &&
+                    cameraPosition.y >= center.y - halfLength &&
+                    cameraPosition.y <= center.y + halfLength &&
+                    cameraPosition.z >= center.z - halfLength &&
+                    cameraPosition.z <= center.z + halfLength;
+
+                if (!inCube) {
+                    continue;
+                }
+
+                let direction = previousCamera.clone().sub(cameraPosition);
+                direction.y = 0;
+                direction.normalize();
+                let xScale;
+                let zScale;
+                if (Math.abs(direction.x) > 0.001) {
+                    xScale =
+                        (center.x +
+                            (Math.sign(direction.x) * halfLength -
+                                cameraPosition.x)) /
+                        direction.x;
+                } else {
+                    xScale = 10e5;
+                }
+                if (Math.abs(direction.z) > 0.001) {
+                    zScale =
+                        (center.z +
+                            (Math.sign(direction.z) * halfLength -
+                                cameraPosition.z)) /
+                        direction.z;
+                } else {
+                    zScale = 10e5;
+                }
+                let scale = Math.min(xScale, zScale);
+                console.log(xScale, zScale, scale);
+                if (isNaN(scale)) {
+                    debugger;
+                }
+                console.log(
+                    cameraPosition
+                        .clone()
+                        .add(direction.clone().multiplyScalar(scale))
+                );
+                return direction.multiplyScalar(scale + 0.04);
+            }
+        }
+        return null;
+    }
+
     generateCube() {
         const newCube = new Cube(this);
 
