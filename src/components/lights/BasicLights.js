@@ -13,7 +13,7 @@ class BasicLights extends Group {
         // Invoke parent Group() constructor with our args
         super(...args);
 
-        const dir = new SpotLight(0x00ff00, 30, 20, 0.8, 1, 1);
+        const dir = new SpotLight(0x00ff00, 2, 20, 0.8, 1, 1);
 
         const dir2 = new SpotLight(0x90ee90, 1.6, 7, 0.8, 1, 1);
         // const topLight = new SpotLight(0xffffff, 5, 10, 1, 1, 1);

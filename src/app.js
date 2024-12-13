@@ -7,11 +7,11 @@
  *
  */
 
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { GameScene } from 'scenes';
 import * as THREE from 'three';
 
+let score = 0;
 let gameStart = true;
 // Initialize core ThreeJS components
 const scene = new GameScene();
@@ -245,7 +245,7 @@ const onAnimationFrameHandler = () => {
             activeMoveControls.fallVelocity = 0;
         }
     }
-
+    score = Math.max(score, camera.position.y);
     renderer.render(scene, camera);
     window.requestAnimationFrame(onAnimationFrameHandler);
 };

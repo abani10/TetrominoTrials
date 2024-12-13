@@ -12,7 +12,7 @@ let xMax = 12;
 let zMax = 12;
 let heightMap = [];
 let maxHeight = 0;
-let confinedToArena = true;
+let confinedToArena = false;
 for (let i = 0; i < xMax + 8; i++) {
     heightMap[i] = Array(zMax + 8).fill(-1.25);
 }
