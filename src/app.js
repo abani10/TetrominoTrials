@@ -14,6 +14,14 @@ import * as THREE from 'three';
 let score = 0;
 let gameStart = true;
 // Initialize core ThreeJS components
+
+// Initialize Renderer
+const renderer = new WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.style.margin = 0;
+document.body.style.overflow = 'hidden';
+document.body.appendChild(renderer.domElement);
 const scene = new GameScene();
 //const camera = new PerspectiveCamera();
 const camera = new PerspectiveCamera(
@@ -29,14 +37,6 @@ camera.lookAt(new Vector3(0, 0, 0));
 const light = new THREE.PointLight(0xffffff, 1, 10);
 camera.add(light);
 scene.add(camera);
-
-// Initialize Renderer
-const renderer = new WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.style.margin = 0;
-document.body.style.overflow = 'hidden';
-document.body.appendChild(renderer.domElement);
 
 // START BACKGROUND MUSIC
 const listener = new THREE.AudioListener();
