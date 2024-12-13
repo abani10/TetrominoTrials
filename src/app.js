@@ -12,7 +12,7 @@ import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { GameScene } from 'scenes';
 import * as THREE from 'three';
 
-let gameStart = false;
+let gameStart = true;
 // Initialize core ThreeJS components
 const scene = new GameScene();
 //const camera = new PerspectiveCamera();

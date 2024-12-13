@@ -32,6 +32,10 @@ module.exports = {
                 use: 'raw-loader',
                 exclude: path.resolve(__dirname, './node_modules/'),
             },
+            {
+                test: /\.(mtl|obj)$/,
+                use: 'file-loader',
+            }
         ],
     },
     resolve: {

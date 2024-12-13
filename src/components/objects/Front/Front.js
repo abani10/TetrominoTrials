@@ -3,6 +3,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { TWEEN } from 'three/examples/jsm/libs/tween.module.min.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import MODEL from './front.obj';
+import * as THREE from 'three';
 
 class Front extends Group {
     constructor(parent) {
@@ -17,39 +18,39 @@ class Front extends Group {
             twirl: 0,
         };
 
-        // Load object
-        const loader = new OBJLoader();
-        const materialloader = new MTLLoader();
-
-        this.name = 'front';
-        loader.load(MODEL, (object) => {
-            this.add(object);
+        // Create a custom Lambert material
+        const customMaterial = new THREE.MeshLambertMaterial({
+            color: 0xA5A5A5, // Bright green color
+            emissive: 0x111111, // Slight emissive effect
+            opacity: 0.9, // Slightly transparent
         });
 
+        // Load the object
+        const loader = new OBJLoader();
+        this.name = 'front';
+
+        loader.load(
+            MODEL,
+            (object) => {
+                // Traverse the object and apply the custom material
+                object.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material = customMaterial;
+                    }
+                });
+
+                // Add the object to the group
+                this.add(object);
+            },
+            undefined,
+            (error) => {
+                console.error('An error occurred loading the object:', error);
+            }
+        );
         // Add self to parent's update list
         parent.addToUpdateList(this);
     }
 
-    // spin() {
-    //     // Add a simple twirl
-    //     this.state.twirl += 6 * Math.PI;
-
-    //     // Use timing library for more precice "bounce" animation
-    //     // TweenJS guide: http://learningthreejs.com/blog/2011/08/17/tweenjs-for-smooth-animation/
-    //     // Possible easings: http://sole.github.io/tween.js/examples/03_graphs.html
-    //     const jumpUp = new TWEEN.Tween(this.position)
-    //         .to({ y: this.position.y + 1 }, 300)
-    //         .easing(TWEEN.Easing.Quadratic.Out);
-    //     const fallDown = new TWEEN.Tween(this.position)
-    //         .to({ y: 0 }, 300)
-    //         .easing(TWEEN.Easing.Quadratic.In);
-
-    //     // Fall down after jumping up
-    //     jumpUp.onComplete(() => fallDown.start());
-
-    //     // Start animation
-    //     jumpUp.start();
-    // }
 
     update(timeStamp) {
         if (this.state.bob) {
