@@ -529,15 +529,15 @@ class GameScene extends Scene {
                 );
             } else if (cameraPosition.z < -zMax / 2) {
                 outOfBounds = new THREE.Vector3(
-                    -zMax / 2 - cameraPosition.z,
                     0,
-                    0
+                    0,
+                    -zMax / 2 - cameraPosition.z
                 );
             } else if (cameraPosition.z > zMax / 2) {
                 outOfBounds = new THREE.Vector3(
-                    zMax / 2 - cameraPosition.z,
                     0,
-                    0
+                    0,
+                    zMax / 2 - cameraPosition.z
                 );
             }
             if (outOfBounds != null) {
