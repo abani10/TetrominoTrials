@@ -26,6 +26,9 @@ const camera = new PerspectiveCamera(
 // Set up camera
 camera.position.set(0, 1, -5);
 camera.lookAt(new Vector3(0, 0, 0));
+const light = new THREE.PointLight(0xffffff, 1, 10);
+camera.add(light);
+scene.add(camera);
 
 // Initialize Renderer
 const renderer = new WebGLRenderer({ antialias: true });
@@ -101,6 +104,7 @@ const MOVEMENT_SPEED = 0.125;
 const v0 = 0.7;
 const camGrav = 0.09;
 const MAX_FALL = -0.15;
+
 let activeMoveControls = {
     up: false,
     left: false,
@@ -201,8 +205,8 @@ const onAnimationFrameHandler = () => {
         );
         camera.position.y += activeMoveControls.fallVelocity;
         activeMoveControls.jumpTime++;
-        if (camera.position.y <= 0) {
-            camera.position.y = 0;
+        if (camera.position.y <= -1) {
+            camera.position.y = -0.8;
             if (activeMoveControls.fallVelocity > 0) {
                 activeMoveControls.fallVelocity += camGrav / 2;
             }

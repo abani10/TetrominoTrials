@@ -513,31 +513,40 @@ class GameScene extends Scene {
             }
         }
         if (confinedToArena) {
-            let outOfBounds = null;
+            let outOfBounds = new THREE.Vector3(0, 0, 0);
 
-            if (cameraPosition.x < -xMax / 2) {
-                outOfBounds = new THREE.Vector3(
-                    -xMax / 2 - cameraPosition.x,
-                    0,
-                    0
+            if (cameraPosition.x < -heightMap.length / 2) {
+                outOfBounds.add(
+                    new THREE.Vector3(
+                        -heightMap.length / 2 - cameraPosition.x,
+                        0,
+                        0
+                    )
                 );
-            } else if (cameraPosition.x > xMax / 2) {
-                outOfBounds = new THREE.Vector3(
-                    xMax / 2 - cameraPosition.x,
-                    0,
-                    0
+            } else if (cameraPosition.x > heightMap.length / 2) {
+                outOfBounds.add(
+                    new THREE.Vector3(
+                        heightMap.length / 2 - cameraPosition.x,
+                        0,
+                        0
+                    )
                 );
-            } else if (cameraPosition.z < -zMax / 2) {
-                outOfBounds = new THREE.Vector3(
-                    0,
-                    0,
-                    -zMax / 2 - cameraPosition.z
+            }
+            if (cameraPosition.z < -heightMap[0].length / 2) {
+                outOfBounds.add(
+                    new THREE.Vector3(
+                        0,
+                        0,
+                        -heightMap[0].length / 2 - cameraPosition.z
+                    )
                 );
-            } else if (cameraPosition.z > zMax / 2) {
-                outOfBounds = new THREE.Vector3(
-                    0,
-                    0,
-                    zMax / 2 - cameraPosition.z
+            } else if (cameraPosition.z > heightMap[0].length / 2) {
+                outOfBounds.add(
+                    new THREE.Vector3(
+                        0,
+                        0,
+                        heightMap[0].length / 2 - cameraPosition.z
+                    )
                 );
             }
             if (outOfBounds != null) {
