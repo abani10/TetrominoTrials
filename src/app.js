@@ -45,20 +45,8 @@ const canvas = renderer.domElement;
 
 canvas.addEventListener('click', () => {
     if (gameStart) {
+        scene.startMusic();
         canvas.requestPointerLock();
-        const listener = new THREE.AudioListener();
-        camera.add(listener);
-        const bgMusic = new THREE.Audio(listener);
-        const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('/src/sounds/Myuu-Tetris-Dark-Version.mp3', function (buffer) {
-            bgMusic.setBuffer(buffer);
-            bgMusic.setLoop(true);
-            bgMusic.setVolume(1);
-            bgMusic.play();
-        });
-
-        const audio = new Audio('/src/sounds/Myuu-Tetris-Dark-Version.mp3');
-        audio.preload = 'auto';
 
         /*
         if(audio.paused){
