@@ -207,6 +207,11 @@ function startRenderLoop() {
         }
         
         if(gameStart) {
+            const scoreCounter = document.getElementById('scoreCounter');
+            if (scoreCounter) {
+                scoreCounter.innerHTML = `Your Score: ${Math.round(score)}`;
+                scoreCounter.style.display = 'block';
+            } 
         let previousCamera = camera.position.clone();
         
 
@@ -299,33 +304,15 @@ function startRenderLoop() {
         }
         score = Math.max(score, camera.position.y);
         } else {
-            // create text
-            /*
-            const loader = new THREE.FontLoader();
-
-            const scoreString = score.toString();
-            const textString = "Score: " + scoreString;
-            loader.load( '//fonts/ArcadeClassic_Regular.json', function ( font ) {
-
-                const geometry = new TextGeometry( textString, {
-                    font: font,
-                    size: 6,
-                    height: 2,
-                });
-
-                const textMesh = new THREE.Mesh(geometry, [new THREE.MeshPhongMaterial({color: 0xad4000 }), new THREE.MeshPhongMaterial({color: 0x5c2301})]);
-                
-                textMesh.castShadow = true;
-                textMesh.position.y += 15;
-                textMesh.position.z -= 40;
-                textMesh.position.x = -8;
-            } );
-            */
             // set the camera to look at the end game screen
             camera.position.set(0, -15, 0);
             camera.lookAt(new Vector3(0, -30, 0));
 
             // adding text for score and restart option
+            const scoreCounter = document.getElementById('scoreCounter');
+            if (scoreCounter) {
+                scoreCounter.style.display = 'none';
+            } 
             const restartScore = document.getElementById('scoreRestart');
             if (restartScore) {
                 restartScore.innerHTML = `Your Score: ${Math.round(score)}<br>Click Anywhere to Restart`;
@@ -383,6 +370,28 @@ function createStartText() {
     document.body.appendChild(startText);
 }
 
+function createScoreCounter() {
+    const startText = document.createElement('div');
+    startText.id = 'scoreCounter';
+    startText.innerHTML = 'Score:'; 
+    startText.style.position = 'absolute';
+    startText.style.top = '8%';
+    startText.style.left = '10%';
+    startText.style.transform = 'translate(-50%, -50%)';
+    startText.style.fontSize = '48px';
+    startText.style.color = 'white';
+    startText.style.textAlign = 'center';
+    startText.style.fontFamily = 'Courier New, sans-serif';
+    startText.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    startText.style.padding = '20px';
+    startText.style.borderRadius = '10px';
+    startText.style.zIndex = '10';
+    startText.style.display = 'block'; 
+
+    // Append to the document body
+    document.body.appendChild(startText);
+}
+
 createStartText();
  // wait for 3 seconds before fading out the text
  const startText = document.getElementById('startText');
@@ -394,6 +403,7 @@ createStartText();
      }  
  }
 createScoreText();
+createScoreCounter();
 init();
 
 
