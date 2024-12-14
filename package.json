@@ -2,6 +2,7 @@
     "name": "the-tetronimo-trials",
     "repository": "cos426finalproject",
     "version": "0.1.0",
+    "homepage": "https://abani10.github.io/TetrominoTrials/",
     "title": "The Tetronimo Trials",
     "description": "The Tetromino Trials is a game where players are trapped inside a GameBoy hand-held console, and have to avoid the falling blocks as they use them as platforms to climb higher up within the console in order to escape.",
     "keywords": [
