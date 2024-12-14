@@ -66,11 +66,11 @@ class GameScene extends Scene {
         audioLoader.load('https://raw.githubusercontent.com/abani10/TetrominoTrials/main/src/sounds/TetrisDarkVERSION.wav', function (buffer) {
             bgMusic.setBuffer(buffer);
             bgMusic.setLoop(true);
-            bgMusic.setVolume(1);
+            bgMusic.setVolume(0.3);
             bgMusic.play();
         });
 
-        const audio = new Audio('https://raw.githubusercontent.com/abani10/TetrominoTrials/blob/main/src/sounds/Myuu-Tetris-Dark-Version.mp3');
+        const audio = new Audio('https://raw.githubusercontent.com/abani10/TetrominoTrials/main/src/sounds/TetrisDarkVERSION.wav');
         audio.preload = 'auto';
     }
     generatePiece() {
