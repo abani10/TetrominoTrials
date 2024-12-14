@@ -45,7 +45,7 @@ const canvas = renderer.domElement;
 
 canvas.addEventListener('click', () => {
     if (gameStart) {
-        scene.startMusic();
+        scene.startMusic(camera);
         canvas.requestPointerLock();
 
         /*

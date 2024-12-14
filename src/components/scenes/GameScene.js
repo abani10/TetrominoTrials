@@ -58,7 +58,7 @@ class GameScene extends Scene {
         this.state.updateList.push(object);
     }
 
-    startMusic() {
+    startMusic(camera) {
         const listener = new THREE.AudioListener();
         camera.add(listener);
         const bgMusic = new THREE.Audio(listener);
