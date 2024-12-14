@@ -12,6 +12,8 @@ import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { GameScene } from 'scenes';
 import * as THREE from 'three';
 
+
+// HTML CODE FOR TEXT
 let score;
 let gameStart;
 let camera;
@@ -51,6 +53,7 @@ function init() {
         jumpTime: -1,
         fallVelocity: 0,
     };
+
     // CREATE THE SCENE ONCE
     scene = new GameScene();
     // Initialize core ThreeJS components
@@ -97,6 +100,10 @@ function init() {
             }
             audio.pause();
             audio.currentTime = 0;
+            const endText = document.getElementById('scoreRestart');
+            if (endText) {
+                endText.style.display = 'none';
+            }
             init();  
         }
     });
@@ -317,6 +324,13 @@ function startRenderLoop() {
             // set the camera to look at the end game screen
             camera.position.set(0, -15, 0);
             camera.lookAt(new Vector3(0, -30, 0));
+
+            // adding text for score and restart option
+            const restartScore = document.getElementById('scoreRestart');
+            if (restartScore) {
+                restartScore.innerHTML = `Your Score: ${Math.round(score)}<br>Click Anywhere to Restart`;
+                restartScore.style.display = 'block';
+            } 
         }
         renderer.render(scene, camera);
         animationFrameId = window.requestAnimationFrame(onAnimationFrameHandler);
@@ -324,6 +338,62 @@ function startRenderLoop() {
 
     animationFrameId = window.requestAnimationFrame(onAnimationFrameHandler);
 }
+
+function createScoreText() {
+    const scoreRestart = document.createElement('div');
+    scoreRestart.id = 'scoreRestart';
+    scoreRestart.innerHTML = 'Your Score: 0<br>Press Anywhere to Restart'; 
+    scoreRestart.style.position = 'absolute';
+    scoreRestart.style.top = '50%';
+    scoreRestart.style.left = '50%';
+    scoreRestart.style.transform = 'translate(-50%, -50%)';
+    scoreRestart.style.fontSize = '48px';
+    scoreRestart.style.color = 'white';
+    scoreRestart.style.textAlign = 'center';
+    scoreRestart.style.fontFamily = 'Courier New, sans-serif';
+    scoreRestart.style.backgroundColor = 'rgba(0, 0, 0, 0.7)'; 
+    scoreRestart.style.padding = '20px';
+    scoreRestart.style.borderRadius = '10px';
+    scoreRestart.style.zIndex = '10';
+    scoreRestart.style.display = 'none'; 
+
+    // Append to the document body
+    document.body.appendChild(scoreRestart);
+}
+
+function createStartText() {
+    const startText = document.createElement('div');
+    startText.id = 'startText';
+    startText.innerHTML = 'Welcome to Tetromino Trials!'; 
+    startText.style.position = 'absolute';
+    startText.style.top = '50%';
+    startText.style.left = '50%';
+    startText.style.transform = 'translate(-50%, -50%)';
+    startText.style.fontSize = '100px';
+    startText.style.color = 'white';
+    startText.style.textAlign = 'center';
+    startText.style.fontFamily = 'Courier New, sans-serif';
+    startText.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    startText.style.padding = '20px';
+    startText.style.borderRadius = '10px';
+    startText.style.zIndex = '10';
+    startText.style.display = 'block'; 
+
+    // Append to the document body
+    document.body.appendChild(startText);
+}
+
+createStartText();
+ // wait for 3 seconds before fading out the text
+ const startText = document.getElementById('startText');
+ if (startText) {
+     if (startText.style.display == 'block') {
+         setTimeout(() => {
+             startText.style.display = 'none'; 
+         }, 3000);
+     }  
+ }
+createScoreText();
 init();
 
 
