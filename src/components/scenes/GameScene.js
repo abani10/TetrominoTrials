@@ -100,9 +100,12 @@ class GameScene extends Scene {
             bgMusic.play();
         });
 
+        /*
         const audio = new Audio('https://raw.githubusercontent.com/abani10/TetrominoTrials/main/src/sounds/TetrisDarkVERSION.wav');
         audio.preload = 'auto';
         audio.loop = true;
+        */
+       
         return bgMusic;
     }
 
