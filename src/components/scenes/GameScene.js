@@ -1,8 +1,11 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color } from 'three';
-import { Cube, Floor, Front } from 'objects';
+import { Cube, Floor, Front, youDied } from 'objects';
 import { BasicLights } from 'lights';
 import * as THREE from 'three';
+import {
+    HemisphereLight, AmbientLight
+} from 'three';
 
 let dropCounter = 0;
 let cubeLength = 1;
@@ -19,6 +22,7 @@ for (let i = 0; i < xMax + 8; i++) {
 let ceiling = 10;
 let dropTime = 10;
 
+
 class GameScene extends Scene {
     constructor() {
         // Call parent Scene() constructor
@@ -26,8 +30,6 @@ class GameScene extends Scene {
 
         // Init state
         this.state = {
-            gui: new Dat.GUI(), // Create GUI for scene
-            rotationSpeed: 1,
             updateList: [],
         };
 
@@ -340,12 +342,6 @@ class GameScene extends Scene {
 
                 // height map collisions
                 if (
-                    heightMap == undefined ||
-                    heightMap[newCube.position.x + xMax / 2 + 4] == undefined
-                ) {
-                    debugger;
-                }
-                if (
                     newCube.position.y <=
                     heightMap[newCube.position.x + xMax / 2 + 4][
                         newCube.position.z + zMax / 2 + 4
@@ -368,7 +364,7 @@ class GameScene extends Scene {
                     cameraPosition.z <= center.z + halfLength;
                 if (inCube) {
                     // you die!
-                    this.endGame();
+                    return true;
                 }
 
                 // add the new cube onto the new piece list
@@ -392,10 +388,19 @@ class GameScene extends Scene {
                         ],
                         cube.position.y
                     );
+                    if (heightMap[Math.floor(cube.position.x) + xMax / 2 + 4][
+                        Math.floor(cube.position.z) + zMax / 2 + 4
+                    ] > maxHeight) {
+                        maxHeight = heightMap[Math.floor(cube.position.x) + xMax / 2 + 4][
+                            Math.floor(cube.position.z) + zMax / 2 + 4
+                        ];
+                    }
                 }
                 resting.push(oldPieceList);
             }
         }
+
+        return false;
     }
 
     update(cameraPosition) {
@@ -408,8 +413,16 @@ class GameScene extends Scene {
         }
         // every so often, move all pieces downwards
         if (dropCounter % dropTime == 0) {
-            this.dropPieces(cameraPosition);
-        }
+            if(this.dropPieces(cameraPosition)) {
+                // const hemi = new HemisphereLight(0xffffbb, 0x080820, 2.3);
+                const ambi = new AmbientLight(0x00ff00, 0.2);
+                const death = new youDied(this);
+                this.add(death);
+                this.add(ambi);
+                return true;
+            }
+        } 
+        return false;
     }
 
     handleFallCollision(cameraPosition) {
@@ -556,9 +569,6 @@ class GameScene extends Scene {
         return null;
     }
 
-    endGame() {
-        console.log('you died');
-    }
     generateCube() {
         const newCube = new Cube(this);
 
