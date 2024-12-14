@@ -72,6 +72,7 @@ class GameScene extends Scene {
 
         const audio = new Audio('https://raw.githubusercontent.com/abani10/TetrominoTrials/main/src/sounds/TetrisDarkVERSION.wav');
         audio.preload = 'auto';
+        audio.loop = true;
     }
     generatePiece() {
         // generate a random number to decide what piece type
