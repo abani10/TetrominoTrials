@@ -63,7 +63,7 @@ class GameScene extends Scene {
         camera.add(listener);
         const bgMusic = new THREE.Audio(listener);
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('https://raw.githubusercontent.com/abani10/TetrominoTrials/blob/main/src/sounds/Myuu-Tetris-Dark-Version.mp3', function (buffer) {
+        audioLoader.load('https://raw.githubusercontent.com/abani10/TetrominoTrials/main/src/sounds/TetrisDarkVERSION.wav', function (buffer) {
             bgMusic.setBuffer(buffer);
             bgMusic.setLoop(true);
             bgMusic.setVolume(1);
