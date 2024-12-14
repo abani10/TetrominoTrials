@@ -1,6 +1,6 @@
 {
-    "name": "tetronimo-trials",
-    "repository": "https://abani10.github.io/TetrominoTrials",
+    "name": "tetromino-trials",
+    "repository": "tetromino-trials",
     "version": "0.1.0",
     "homepage": "https://abani10.github.io/TetrominoTrials",
     "title": "The Tetronimo Trials",
