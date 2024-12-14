@@ -31,10 +31,6 @@ module.exports = {
                 test: /\.(vert|frag|glsl|shader|txt)$/i,
                 use: 'raw-loader',
                 exclude: path.resolve(__dirname, './node_modules/'),
-            },
-            {
-                test: /\.(mtl|obj)$/,
-                use: 'file-loader',
             }
         ],
     },
