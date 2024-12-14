@@ -39,23 +39,6 @@ const light = new THREE.PointLight(0xffffff, 1, 10);
 camera.add(light);
 scene.add(camera);
 
-// START BACKGROUND bgMusic
-/*
-const listener = new THREE.AudioListener();
-camera.add(listener);
-const bgMusic = new THREE.Audio(listener);
-const audioLoader = new THREE.AudioLoader();
-audioLoader.load('/src/sounds/Myuu-Tetris-Dark-Version.mp3', function (buffer) {
-    bgMusic.setBuffer(buffer);
-    bgMusic.setLoop(true);
-    bgMusic.setVolume(0.3);
-    bgMusic.play();
-});
-
-const audio = new Audio('/src/sounds/Myuu-Tetris-Dark-Version.mp3')
-audio.preload = 'auto'
-*/
-
 // Enable Pointer Lock
 let isPointerLocked = false;
 const canvas = renderer.domElement;
@@ -63,9 +46,25 @@ const canvas = renderer.domElement;
 canvas.addEventListener('click', () => {
     if (gameStart) {
         canvas.requestPointerLock();
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
+        const bgMusic = new THREE.Audio(listener);
+        const audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/src/sounds/Myuu-Tetris-Dark-Version.mp3', function (buffer) {
+            bgMusic.setBuffer(buffer);
+            bgMusic.setLoop(true);
+            bgMusic.setVolume(1);
+            bgMusic.play();
+        });
+
+        const audio = new Audio('/src/sounds/Myuu-Tetris-Dark-Version.mp3');
+        audio.preload = 'auto';
+
+        /*
         if(audio.paused){
             audio.play()
         }
+        */
     }
 
 });
@@ -263,6 +262,7 @@ const onAnimationFrameHandler = () => {
     score = Math.max(score, camera.position.y);
     } else {
         // create text
+        /*
         const loader = new THREE.FontLoader();
 
         const scoreString = score.toString();
@@ -282,7 +282,7 @@ const onAnimationFrameHandler = () => {
             textMesh.position.z -= 40;
             textMesh.position.x = -8;
         } );
-
+        */
         // set the camera to look at the end game screen
         camera.position.set(0, -15, 0);
         camera.lookAt(new Vector3(0, -30, 0));
