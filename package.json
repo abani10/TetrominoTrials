@@ -3,16 +3,16 @@
     "repository": "cos426finalproject",
     "version": "0.1.0",
     "title": "The Tetronimo Trials",
-    "description": "SHORT DESCRIPTION OF PROJECT HERE. ONE TO TWO SENTENCES MAX",
+    "description": "The Tetromino Trials is a game where players are trapped inside a GameBoy hand-held console, and have to avoid the falling blocks as they use them as platforms to climb higher up within the console in order to escape.",
     "keywords": [
         "Princeton",
         "graphics",
         "three.js",
         "COS 426",
-        "keywor0d",
-        "keyword1",
-        "keyword2-etc",
-        "but this last entry CANNOT have a comma after it ->"
+        "tetris",
+        "platformer",
+        "horror",
+        "3D"
     ],
     "scripts": {
         "start": "webpack-dev-server --mode development --output-public-path \"\"",
