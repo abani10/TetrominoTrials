@@ -8,20 +8,20 @@ import {
 } from 'three';
 
 let dropCounter = 0;
-let cubeLength = 1;
+const cubeLength = 1;
+const xMax = 12;
+const zMax = 12;
+const confinedToArena = true;
+const ceiling = 10;
+const dropTime = 10;
+
 let falling = [];
 let resting = [];
-let xMax = 12;
-let zMax = 12;
 let heightMap = [];
 let maxHeight = 0;
-let confinedToArena = false;
 for (let i = 0; i < xMax + 8; i++) {
     heightMap[i] = Array(zMax + 8).fill(-1.25);
 }
-let ceiling = 10;
-let dropTime = 10;
-
 
 class GameScene extends Scene {
     constructor() {
@@ -45,13 +45,43 @@ class GameScene extends Scene {
         const front = new Front(this);
 
         const floor = new Floor(this);
-        this.add(lights, floor, front);
+        const death = new youDied(this);
+        this.add(lights, floor, front, death);
 
         // this.add(cube);
         // let list = [cube];
         // resting.push(list);
         // Populate GUI
         //this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
+    }
+
+    destroy() {
+        this.traverse(object => {
+            if (object.geometry) {
+                object.geometry.dispose(); // Dispose geometry
+            }
+            if (object.material) {
+                if (Array.isArray(object.material)) {
+                    object.material.forEach(mat => mat.dispose()); // Dispose each material if it's an array
+                } else {
+                    object.material.dispose(); // Dispose material
+                }
+            }
+            if (object.texture) {
+                object.texture.dispose(); // Dispose texture (if any)
+            }
+        });
+        falling = [];
+        resting = [];
+        heightMap = [];
+        maxHeight = 0;
+        for (let i = 0; i < xMax + 8; i++) {
+            heightMap[i] = Array(zMax + 8).fill(-1.25);
+        }
+        // this.remove(death);
+        // this.remove(lights);
+        // this.remove(front);
+        // this.remove(floor);
     }
 
     addToUpdateList(object) {
@@ -73,7 +103,9 @@ class GameScene extends Scene {
         const audio = new Audio('https://raw.githubusercontent.com/abani10/TetrominoTrials/main/src/sounds/TetrisDarkVERSION.wav');
         audio.preload = 'auto';
         audio.loop = true;
+        return bgMusic;
     }
+
     generatePiece() {
         // generate a random number to decide what piece type
         // we can change how we want to do this
@@ -432,8 +464,6 @@ class GameScene extends Scene {
             if(this.dropPieces(cameraPosition)) {
                 // const hemi = new HemisphereLight(0xffffbb, 0x080820, 2.3);
                 const ambi = new AmbientLight(0x00ff00, 0.2);
-                const death = new youDied(this);
-                this.add(death);
                 this.add(ambi);
                 return true;
             }
