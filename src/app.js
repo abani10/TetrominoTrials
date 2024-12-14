@@ -13,7 +13,7 @@ import { GameScene } from 'scenes';
 import * as THREE from 'three';
 
 
-// HTML CODE FOR TEXT
+// GLOBAL VARIABLES
 let score;
 let gameStart;
 let camera;
