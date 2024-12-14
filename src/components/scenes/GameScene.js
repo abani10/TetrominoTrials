@@ -63,14 +63,14 @@ class GameScene extends Scene {
         camera.add(listener);
         const bgMusic = new THREE.Audio(listener);
         const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('/src/sounds/Myuu-Tetris-Dark-Version.mp3', function (buffer) {
+        audioLoader.load('https://raw.githubusercontent.com/abani10/TetrominoTrials/blob/main/src/sounds/Myuu-Tetris-Dark-Version.mp3', function (buffer) {
             bgMusic.setBuffer(buffer);
             bgMusic.setLoop(true);
             bgMusic.setVolume(1);
             bgMusic.play();
         });
 
-        const audio = new Audio('/src/sounds/Myuu-Tetris-Dark-Version.mp3');
+        const audio = new Audio('https://raw.githubusercontent.com/abani10/TetrominoTrials/blob/main/src/sounds/Myuu-Tetris-Dark-Version.mp3');
         audio.preload = 'auto';
     }
     generatePiece() {
