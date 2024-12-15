@@ -90,26 +90,10 @@ function init() {
 
     canvas.addEventListener('click', () => {
         if (gameStart) {
-            audio = scene.startMusic(camera);
             canvas.requestPointerLock();
-        } else {
-            if (animationFrameId) {
-                window.cancelAnimationFrame(animationFrameId);
-                animationFrameId = null;
-            }
-    
-            scene.destroy();
-            if (renderer && renderer.domElement) {
-                renderer.dispose();
-                document.body.removeChild(renderer.domElement);
-            }
-            audio.pause();
-            audio.currentTime = 0;
-            const endText = document.getElementById('scoreRestart');
-            if (endText) {
-                endText.style.display = 'none';
-            }
-            init();  
+        } 
+        if (audio == null) {
+            audio = scene.startMusic(camera);
         }
     });
     // Mouse look
@@ -191,6 +175,29 @@ function init() {
                 activeMoveControls.jump = false;
             }
         }
+        if (event.key == 'r') {
+            if (audio != null) {
+                audio.stop();
+                audio.play();
+            }
+            if (animationFrameId) {
+                window.cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+    
+            scene.destroy();
+            if (renderer && renderer.domElement) {
+                renderer.dispose();
+                document.body.removeChild(renderer.domElement);
+            }
+            audio.pause();
+            audio.currentTime = 0;
+            const endText = document.getElementById('scoreRestart');
+            if (endText) {
+                endText.style.display = 'none';
+            }
+            init();  
+        }
     });
     
     // Resize Handler
@@ -214,7 +221,6 @@ function startRenderLoop() {
         if(gameStart) {
             // text that reminds you of how to restart if you
             // remain stagnant for too long
-            console.log(restartCounter);
             if (score == prevScore) {
                 restartCounter++;
             }
@@ -347,7 +353,7 @@ function startRenderLoop() {
             } 
             const restartScore = document.getElementById('scoreRestart');
             if (restartScore) {
-                restartScore.innerHTML = `Your Score: ${Math.round(score)}<br>Click Anywhere to Restart`;
+                restartScore.innerHTML = `Your Score: ${Math.round(score)}<br>Press R to Restart`;
                 restartScore.style.display = 'block';
             } 
         }
