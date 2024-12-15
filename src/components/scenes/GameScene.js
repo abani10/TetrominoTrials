@@ -528,7 +528,6 @@ class GameScene extends Scene {
         }
         return 0;
     }
-
     handleSideCollisions(cameraPosition, previousCamera) {
         let allPieces = [...resting, ...falling];
         for (let piece of allPieces) {

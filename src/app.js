@@ -190,8 +190,8 @@ function init() {
                 renderer.dispose();
                 document.body.removeChild(renderer.domElement);
             }
-            audio.pause();
-            audio.currentTime = 0;
+            // audio.pause();
+            // audio.currentTime = 0;
             const endText = document.getElementById('scoreRestart');
             if (endText) {
                 endText.style.display = 'none';
