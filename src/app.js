@@ -15,6 +15,7 @@ import * as THREE from 'three';
 
 // GLOBAL VARIABLES
 let score;
+let prevScore;
 let gameStart;
 let camera;
 let renderer;
@@ -22,6 +23,7 @@ let scene;
 let audio;
 let canvas;
 let animationFrameId;
+let restartCounter;
 
 // Variables to store the current yaw (horizontal) and pitch (vertical) values
 let pitch; // Vertical angle (rotation around X-axis)
@@ -32,6 +34,8 @@ const MOVEMENT_SPEED = 0.125;
 const v0 = 0.7;
 const camGrav = 0.09;
 const MAX_FALL = -0.15;
+const restartDelay = 8000;
+const restartFadeDelay = 1000;
 
 let activeMoveControls;
 
@@ -41,9 +45,11 @@ let isPointerLocked = false;
 
 function init() {
     score = 0;
+    prevScore = 0;
     gameStart = true;
     pitch = 0;
     yaw = Math.PI; 
+    restartCounter = restartDelay;
     activeMoveControls = {
         up: false,
         left: false,
@@ -207,11 +213,34 @@ function startRenderLoop() {
         }
         
         if(gameStart) {
+            // text that reminds you of how to restart if you
+            // remain stagnant for too long
+            console.log(restartCounter);
+            if (score == prevScore) {
+                restartCounter++;
+            }
+            if (restartCounter >= restartDelay) {
+                const restart = document.getElementById('restartCounter');
+                if (restart) {
+                    restart.style.display = 'block';
+                } 
+            }
+            if (restartCounter >= restartFadeDelay + restartDelay) {
+                const restart2 = document.getElementById('restartCounter');
+                if (restart2) {
+                    restart2.style.display = 'none';
+                } 
+                restartCounter = 0;
+            }
+            prevScore = score;
+
+            // textshowing the score counter 
             const scoreCounter = document.getElementById('scoreCounter');
             if (scoreCounter) {
                 scoreCounter.innerHTML = `Your Score: ${Math.round(score)}`;
                 scoreCounter.style.display = 'block';
             } 
+
         let previousCamera = camera.position.clone();
         
 
@@ -313,6 +342,10 @@ function startRenderLoop() {
             if (scoreCounter) {
                 scoreCounter.style.display = 'none';
             } 
+            const restart = document.getElementById('restartCounter');
+            if (restart) {
+                restart.style.display = 'none';
+            } 
             const restartScore = document.getElementById('scoreRestart');
             if (restartScore) {
                 restartScore.innerHTML = `Your Score: ${Math.round(score)}<br>Click Anywhere to Restart`;
@@ -392,6 +425,28 @@ function createScoreCounter() {
     document.body.appendChild(startText);
 }
 
+function createRestartCounter() {
+    const startText = document.createElement('div');
+    startText.id = 'restartCounter';
+    startText.innerHTML = 'Press R to Restart'; 
+    startText.style.position = 'absolute';
+    startText.style.top = '10%';
+    startText.style.left = '90%';
+    startText.style.transform = 'translate(-50%, -50%)';
+    startText.style.fontSize = '48px';
+    startText.style.color = 'white';
+    startText.style.textAlign = 'center';
+    startText.style.fontFamily = 'Courier New, sans-serif';
+    startText.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    startText.style.padding = '20px';
+    startText.style.borderRadius = '10px';
+    startText.style.zIndex = '10';
+    startText.style.display = 'block'; 
+
+    // Append to the document body
+    document.body.appendChild(startText);
+}
+
 createStartText();
  // wait for 3 seconds before fading out the text
  const startText = document.getElementById('startText');
@@ -404,6 +459,7 @@ createStartText();
  }
 createScoreText();
 createScoreCounter();
+createRestartCounter();
 init();
 
 
