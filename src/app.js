@@ -7,7 +7,6 @@
  *
  */
 
-import { TextGeometry } from 'three';
 import { WebGLRenderer, PerspectiveCamera, Vector3 } from 'three';
 import { GameScene } from 'scenes';
 import * as THREE from 'three';
@@ -411,7 +410,7 @@ function createScoreCounter() {
     startText.style.top = '8%';
     startText.style.left = '10%';
     startText.style.transform = 'translate(-50%, -50%)';
-    startText.style.fontSize = '48px';
+    startText.style.fontSize = '28px';
     startText.style.color = 'white';
     startText.style.textAlign = 'center';
     startText.style.fontFamily = 'Courier New, sans-serif';
@@ -433,7 +432,7 @@ function createRestartCounter() {
     startText.style.top = '10%';
     startText.style.left = '90%';
     startText.style.transform = 'translate(-50%, -50%)';
-    startText.style.fontSize = '48px';
+    startText.style.fontSize = '28px';
     startText.style.color = 'white';
     startText.style.textAlign = 'center';
     startText.style.fontFamily = 'Courier New, sans-serif';
